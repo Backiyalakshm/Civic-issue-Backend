@@ -2,9 +2,8 @@ FROM maven:3.9.9-eclipse-temurin-17
 
 WORKDIR /app
 
-COPY Civic-issue-Backend ./Civic-issue-Backend
-
-WORKDIR /app/Civic-issue-Backend
+# Copy everything from the current folder (your project) to /app
+COPY . .
 
 RUN mvn clean package -DskipTests
 
