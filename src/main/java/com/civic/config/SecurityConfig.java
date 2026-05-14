@@ -44,14 +44,9 @@ public class SecurityConfig {
 
             // ✅ URL security rules
             .authorizeHttpRequests(auth -> auth
-
-                // PUBLIC APIs (NO LOGIN REQUIRED)
-                .requestMatchers(
-                        "/api/auth/**",
-                        "/api/public/**",
-                        "/h2-console/**",
-                        "/"
-                ).permitAll()
+    .requestMatchers("/api/auth/**", "/api/public/**", "/h2-console/**", "/")
+    .permitAll()
+)
 
                 // ROLE BASED ACCESS
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
