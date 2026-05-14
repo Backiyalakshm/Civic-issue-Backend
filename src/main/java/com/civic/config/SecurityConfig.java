@@ -36,42 +36,38 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-            // ❌ Disable CSRF (required for APIs)
             .csrf(csrf -> csrf.disable())
-
-            // ✅ CORS config
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-            // ✅ URL security rules
             .authorizeHttpRequests(auth -> auth
-    .requestMatchers("/api/auth/**", "/api/public/**", "/h2-console/**", "/")
-    .permitAll()
-)
+                // PUBLIC APIs
+                .requestMatchers(
+                        "/api/auth/**",
+                        "/api/public/**",
+                        "/h2-console/**",
+                        "/"
+                ).permitAll()
 
                 // ROLE BASED ACCESS
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/officer/**").hasAnyRole("OFFICER", "ADMIN")
 
-                // EVERYTHING ELSE NEEDS LOGIN
+                // EVERYTHING ELSE
                 .anyRequest().authenticated()
             )
 
-            // ✅ Stateless session for JWT
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
 
-            // ✅ Authentication provider
             .authenticationProvider(authenticationProvider())
 
-            // ✅ JWT filter
             .addFilterBefore(jwtAuthenticationFilter,
                     UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    // 🌐 CORS FIX (VERY IMPORTANT FOR FRONTEND)
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
@@ -80,7 +76,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:5173",
                 "http://localhost:3000",
-                "https://your-frontend-domain.com"   // 👈 add later when frontend deployed
+                "https://your-frontend-domain.com"
         ));
 
         configuration.setAllowedMethods(List.of(
